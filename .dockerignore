@@ -1,0 +1,6 @@
+.zed
+.vscode
+.idea
+node_modules
+db-data
+config

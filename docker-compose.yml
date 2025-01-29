@@ -1,0 +1,38 @@
+version: '2.2'
+
+services:
+  db:
+    image: postgres:13
+    env_file:
+      - ./config/.dev.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - 5432:${DB_PORT}
+    expose:
+      - ${DB_PORT}
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    env_file:
+      - ./config/.dev.env
+    command: sh entrypoint-dev.sh
+    volumes:
+      - ./app:/app/app
+      - ./drizzle.config.ts:/app/drizzle.config.ts
+      - ./eslintrc.json:/app/eslintrc.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    expose:
+      - ${SERVER_PORT}
+    links:
+      - db
+    depends_on:
+      - db
